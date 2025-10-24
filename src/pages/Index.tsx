@@ -26,6 +26,8 @@ import {
 const Index = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [isScrolling, setIsScrolling] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,13 +40,65 @@ const Index = () => {
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+      // Enhanced smooth scroll with very slow animation
+      const elementPosition = element.offsetTop - 100; // Account for fixed header
+      const startPosition = window.pageYOffset;
+      const distance = elementPosition - startPosition;
+      const duration = 3000; // Very slow: 3 seconds for dramatic effect
+      let start = null;
+
+      // Enhanced easing function for ultra-smooth animation
+      const easeInOutQuart = (t: number) => {
+        return t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
+      };
+
+      // Add visual feedback during scroll
+      document.body.style.scrollBehavior = 'auto';
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      setIsScrolling(true);
+
+      const step = (timestamp: number) => {
+        if (!start) start = timestamp;
+        const progress = timestamp - start;
+        const percentage = Math.min(progress / duration, 1);
+
+        // Update scroll progress
+        setScrollProgress(percentage);
+
+        // Apply enhanced easing
+        const ease = easeInOutQuart(percentage);
+        const currentPosition = startPosition + distance * ease;
+
+        window.scrollTo(0, currentPosition);
+
+        if (progress < duration) {
+          requestAnimationFrame(step);
+        } else {
+          // Restore original overflow after animation completes
+          document.body.style.overflow = originalOverflow;
+          document.body.style.scrollBehavior = '';
+          setIsScrolling(false);
+          setScrollProgress(0);
+        }
+      };
+
+      requestAnimationFrame(step);
       setIsMobileMenuOpen(false);
     }
   };
 
   return (
-    <div className="min-h-screen w-full">
+    <>
+      {/* Scroll Progress Indicator */}
+      <div
+        className={`scroll-progress ${isScrolling ? 'active' : ''}`}
+        style={{
+          transform: `scaleX(${scrollProgress})`
+        }}
+      />
+
+      <div className="min-h-screen w-full custom-scrollbar momentum-scroll">
       {/* Navigation */}
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -221,7 +275,7 @@ const Index = () => {
       </section>
 
       {/* Services Section */}
-      <section id="services" className="py-24 bg-background">
+      <section id="services" className="py-24 bg-background smooth-scroll-section">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <p className="text-primary font-semibold mb-3 uppercase tracking-wide">
@@ -288,7 +342,7 @@ const Index = () => {
       </section>
 
       {/* Comparison Section */}
-      <section id="process" className="py-24 bg-dark-bg">
+      <section id="process" className="py-24 bg-dark-bg smooth-scroll-section">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <p className="text-primary font-semibold mb-3 uppercase tracking-wide">
@@ -349,7 +403,7 @@ const Index = () => {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-24 bg-dark-bg">
+      <section id="faq" className="py-24 bg-dark-bg smooth-scroll-section">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto">
             <Accordion type="single" collapsible className="space-y-4">
@@ -456,7 +510,7 @@ const Index = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section id="results" className="py-24 bg-background">
+      <section id="results" className="py-24 bg-background smooth-scroll-section">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <p className="text-primary font-semibold mb-3 uppercase tracking-wide">
@@ -508,7 +562,7 @@ const Index = () => {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-24 bg-light-gray-bg">
+      <section id="about" className="py-24 bg-light-gray-bg smooth-scroll-section">
         <div className="container mx-auto px-6">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-4xl md:text-5xl font-bold text-text-charcoal mb-6">
@@ -592,7 +646,8 @@ const Index = () => {
           </div>
         </div>
       </footer>
-    </div>
+      </div>
+    </>
   );
 };
 

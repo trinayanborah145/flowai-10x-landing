@@ -57,9 +57,98 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground font-sans antialiased;
   }
-  
+
   html {
-    scroll-behavior: smooth;
+    scroll-behavior: auto !important; /* Disable browser smooth scrolling */
+    /* Enhanced smooth scrolling with custom properties */
+  }
+
+  .smooth-scroll-section {
+    scroll-margin-top: 100px;
+    scroll-behavior: auto; /* Ensure custom scroll takes precedence */
+  }
+
+  /* Custom easing functions for smooth scrolling */
+  .ease-out-quint {
+    transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .ease-in-out-cubic {
+    transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
+  }
+
+  .ease-in-out-quart {
+    transition-timing-function: cubic-bezier(0.76, 0, 0.24, 1);
+  }
+
+  /* Scroll reveal animation */
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .scroll-reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Momentum scroll effect */
+  .momentum-scroll {
+    overflow-y: auto;
+    scroll-behavior: auto !important; /* Force disable browser smooth scroll */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Ultra slow scroll container */
+  .ultra-slow-scroll {
+    scroll-behavior: auto !important;
+    overflow: hidden;
+  }
+
+  .ultra-slow-scroll.scrolling {
+    overflow: hidden;
+  }
+
+  /* Scroll progress indicator (optional visual feedback) */
+  .scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--secondary)));
+    transform-origin: left;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .scroll-progress.active {
+    opacity: 1;
+  }
+
+  /* Force disable all browser smooth scrolling */
+  * {
+    scroll-behavior: auto !important;
+  }
+
+  /* Enhanced scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary) / 0.5);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.7);
   }
 }
 
